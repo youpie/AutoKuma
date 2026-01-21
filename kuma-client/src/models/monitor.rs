@@ -289,6 +289,9 @@ pub enum MonitorType {
     #[serde(rename = "tailscale-ping")]
     TailscalePing,
 
+    #[serde(rename = "SMTP")]
+    SMTP,
+
     #[cfg(not(feature = "uptime-kuma-v1"))]
     #[serde(rename = "snmp")]
     SNMP,
@@ -1135,6 +1138,10 @@ monitor_type! {
 }
 
 monitor_type! {
+    MonitorSMTP SMTP {}
+}
+
+monitor_type! {
     MonitorTailscalePing TailscalePing {
         #[serde(rename = "hostname")]
         hostname: Option<String>,
@@ -1342,12 +1349,19 @@ pub enum Monitor {
         #[serde(flatten)]
         value: MonitorRabbitMQ,
     },
+
+    #[serde(rename = "smtp")]
+    SMTP {
+        #[serde(flatten)]
+        value: MonitorSMTP,
+    },
 }
 
 impl Monitor {
     pub fn monitor_type(&self) -> MonitorType {
         match self {
             Monitor::Group { .. } => MonitorType::Group,
+            Monitor::SMTP { .. } => MonitorType::SMTP,
             Monitor::Http { .. } => MonitorType::Http,
             Monitor::Port { .. } => MonitorType::Port,
             Monitor::Ping { .. } => MonitorType::Ping,
@@ -1379,6 +1393,7 @@ impl Monitor {
     pub fn common(&self) -> Box<&dyn MonitorCommon> {
         match self {
             Monitor::Group { value } => Box::new(value),
+            Monitor::SMTP { value } => Box::new(value),
             Monitor::Http { value } => Box::new(value),
             Monitor::Port { value } => Box::new(value),
             Monitor::Ping { value } => Box::new(value),
@@ -1410,6 +1425,7 @@ impl Monitor {
     pub fn common_mut(&mut self) -> Box<&mut dyn MonitorCommon> {
         match self {
             Monitor::Group { value } => Box::new(value),
+            Monitor::SMTP { value } => Box::new(value),
             Monitor::Http { value } => Box::new(value),
             Monitor::Port { value } => Box::new(value),
             Monitor::Ping { value } => Box::new(value),

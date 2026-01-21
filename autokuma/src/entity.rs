@@ -99,6 +99,7 @@ macro_rules! parse_entity {
 impl ParseValue for Monitor {
     fn parse(v: serde_json::Value) -> Result<Self> {
         match Self::parse_type::<MonitorType>(&v)? {
+            MonitorType::SMTP => parse_entity!(Monitor, MonitorSMTP, v),
             MonitorType::Dns => parse_entity!(Monitor, MonitorDns, v),
             MonitorType::Docker => parse_entity!(Monitor, MonitorDocker, v),
             MonitorType::GameDig => parse_entity!(Monitor, MonitorGameDig, v),
